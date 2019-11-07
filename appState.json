@@ -22,7 +22,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "animal-reserve-janaka/rekognizer.js",
-        "code": "let AWS = require(\"aws-sdk\");\nlet rekog = new AWS.Rekognition();\n\nexports.handler = function(event, context, callback) {\n    //console.log(JSON.stringify(event, null, 2));\n\n    let s3 = event.Records[0].s3;\n    rekog.detectLabels({\n        Image: {\n            S3Object: {\n                Bucket: s3.bucket.name,\n                Name: s3.object.key\n            }\n        },\n        MaxLabels: 1\n    }).promise()\n    .then(data => {\n        console.log(data);\n        callback(null, {});\n    })\n    .catch(err => callback(err));\n}",
+        "code": "let AWS = require(\"aws-sdk\");\nconst ddb = new AWS.DynamoDB.DocumentClient();\nlet rekog = new AWS.Rekognition();\n\nexports.handler = function (event, context, callback) {\n    //console.log(JSON.stringify(event, null, 2));\n\n    let s3 = event.Records[0].s3;\n    rekog.detectLabels({\n        Image: {\n            S3Object: {\n                Bucket: s3.bucket.name,\n                Name: s3.object.key\n            }\n        },\n        MaxLabels: 1\n    }).promise()\n        .then(data => {\n            console.log(data);\n            let label = data.Labels[0].Name;\n            ddb.put({\n                TableName: 'slp-animals-janaka',\n                Item: { 'name': s3.object.key, 'label': label }\n            }).promise()\n                .then((data) => {\n                    callback(null, {});\n                })\n                .catch((err) => {\n                    callback(err);\n                });\n        })\n        .catch(err => callback(err));\n}",
         "config": {
           "runtime": "nodejs8.10",
           "handler": "handler",
@@ -60,7 +60,7 @@
             },
             {
               "Effect": "Allow",
-              "Resource": "slp-animal-uploads/*",
+              "Resource": "arn:aws:s3:::slp-animal-uploads/*",
               "Action": [
                 "s3:GetObject"
               ]
@@ -86,6 +86,40 @@
             "name": "slp-animal-uploads"
           }
         }
+      },
+      "ddbslpAnimalsJanaka": {
+        "name": "ddbslpAnimalsJanaka",
+        "type": "DynamoDB",
+        "config": {
+          "mode": 0,
+          "operation": "put",
+          "table": {
+            "arn": "",
+            "name": "slp-animals-janaka",
+            "partitionKey": "name",
+            "partitionKeyType": "S",
+            "hasSortKey": true,
+            "sortKey": "label",
+            "sortKeyType": "S",
+            "payPerRequest": true,
+            "mode": 0
+          },
+          "isGlobalEditMode": false,
+          "parameters": {
+            "Key": {},
+            "Item": {
+              "name": "@{s3.object.key}",
+              "label": "@{label}"
+            },
+            "ExpressionAttributeValues": {}
+          },
+          "triggerParams": {},
+          "validator": {
+            "validatableFields": {},
+            "validity": true
+          },
+          "valid": true
+        }
       }
     },
     "customTemplate": {
@@ -106,8 +140,10 @@
       "dependencies": {
         "aws-sdk": {
           "name": "aws-sdk",
-          "version": "2.566.0",
-          "language": "javascript"
+          "language": "javascript",
+          "version": "2.176.0",
+          "dev": true,
+          "notRemovable": false
         }
       }
     }
@@ -119,7 +155,7 @@
     "projectRegion": "us-east-1",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1573111194309
+    "lastSave": 1573112454903
   },
   "VCS_STATE": {
     "provider": "GitHub",
