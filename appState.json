@@ -22,7 +22,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "animal-reserve-janaka/rekognizer.js",
-        "code": "exports.handler = function(event, context, callback) {\n    console.log(JSON.stringify(event, null, 2));\n    callback(null, event);\n}",
+        "code": "let AWS = require(\"aws-sdk\");\nlet rekog = new AWS.Rekognition();\n\nexports.handler = function(event, context, callback) {\n    //console.log(JSON.stringify(event, null, 2));\n\n    let s3 = event.Records[0].s3;\n    rekog.detectLabels({\n        Image: {\n            S3Object: {\n                Bucket: s3.bucket.name,\n                Name: s3.object.key\n            }\n        },\n        MaxLabels: 1\n    }).promise()\n    .then(data => {\n        console.log(data);\n        callback(null, {});\n    })\n    .catch(err => callback(err));\n}",
         "config": {
           "runtime": "nodejs8.10",
           "handler": "handler",
@@ -47,12 +47,29 @@
             "functionId": "87af2684-8b72-4dfe-ae1c-41b28c0e9ab8",
             "event": "{\n    \"key1\": \"value1\",\n    \"key2\": \"value2\",\n    \"key3\": \"value3\"\n}"
           }
+        },
+        "customSecurityPolicy": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Resource": "*",
+              "Action": [
+                "rekognition:*"
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Resource": "slp-animal-uploads/*",
+              "Action": [
+                "s3:GetObject"
+              ]
+            }
+          ]
         }
       }
     },
-    "deletedFiles": [
-      "animal-reserve-janaka/lambda.js"
-    ],
+    "deletedFiles": [],
     "rootNode": "c72258ff-912e-4075-87f9-7fcae037ebef",
     "openFiles": [
       "87af2684-8b72-4dfe-ae1c-41b28c0e9ab8"
@@ -86,7 +103,13 @@
       }
     ],
     "packageJSON": {
-      "dependencies": {}
+      "dependencies": {
+        "aws-sdk": {
+          "name": "aws-sdk",
+          "version": "2.566.0",
+          "language": "javascript"
+        }
+      }
     }
   },
   "PROJECT_META": {
@@ -96,7 +119,7 @@
     "projectRegion": "us-east-1",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1573109492343
+    "lastSave": 1573111194309
   },
   "VCS_STATE": {
     "provider": "GitHub",
