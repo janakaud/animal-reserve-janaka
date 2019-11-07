@@ -1,0 +1,108 @@
+{
+  "EDITOR_STATE": {
+    "allProjectFiles": {
+      "c72258ff-912e-4075-87f9-7fcae037ebef": {
+        "id": "c72258ff-912e-4075-87f9-7fcae037ebef",
+        "parent": null,
+        "name": "animal-reserve-janaka",
+        "type": "DIRECTORY",
+        "isDirectory": true,
+        "children": [
+          "87af2684-8b72-4dfe-ae1c-41b28c0e9ab8"
+        ],
+        "isRemovable": false,
+        "filePath": "animal-reserve-janaka"
+      },
+      "87af2684-8b72-4dfe-ae1c-41b28c0e9ab8": {
+        "id": "87af2684-8b72-4dfe-ae1c-41b28c0e9ab8",
+        "parent": "c72258ff-912e-4075-87f9-7fcae037ebef",
+        "name": "rekognizer.js",
+        "type": "JS_LAMBDA",
+        "isDirectory": false,
+        "children": [],
+        "isRemovable": true,
+        "filePath": "animal-reserve-janaka/rekognizer.js",
+        "code": "exports.handler = function(event, context, callback) {\n    console.log(JSON.stringify(event, null, 2));\n    callback(null, event);\n}",
+        "config": {
+          "runtime": "nodejs8.10",
+          "handler": "handler",
+          "timeout": 60,
+          "memory": 128,
+          "layers": []
+        },
+        "triggers": [
+          {
+            "resourceName": "s3slpAnimalUploads",
+            "config": {
+              "type": "s3:ObjectCreated:*",
+              "keyPrefix": "",
+              "keySuffix": ""
+            }
+          }
+        ],
+        "testCases": {
+          "14de61ad-d1f6-490b-92a0-73d171ad9e15": {
+            "id": "14de61ad-d1f6-490b-92a0-73d171ad9e15",
+            "name": "Test",
+            "functionId": "87af2684-8b72-4dfe-ae1c-41b28c0e9ab8",
+            "event": "{\n    \"key1\": \"value1\",\n    \"key2\": \"value2\",\n    \"key3\": \"value3\"\n}"
+          }
+        }
+      }
+    },
+    "deletedFiles": [
+      "animal-reserve-janaka/lambda.js"
+    ],
+    "rootNode": "c72258ff-912e-4075-87f9-7fcae037ebef",
+    "openFiles": [
+      "87af2684-8b72-4dfe-ae1c-41b28c0e9ab8"
+    ],
+    "currentFileId": "87af2684-8b72-4dfe-ae1c-41b28c0e9ab8",
+    "resources": {
+      "s3slpAnimalUploads": {
+        "name": "s3slpAnimalUploads",
+        "type": "S3",
+        "config": {
+          "mode": 1,
+          "bucket": {
+            "region": "us-east-1",
+            "name": "slp-animal-uploads"
+          }
+        }
+      }
+    },
+    "customTemplate": {
+      "dialect": null,
+      "definitions": {}
+    },
+    "envVariables": [
+      {
+        "lambdaId": "all",
+        "varKey": "SIGMA_AWS_ACC_ID",
+        "varValue": null,
+        "shouldPersist": false,
+        "displayOnly": false,
+        "editable": false
+      }
+    ],
+    "packageJSON": {
+      "dependencies": {}
+    }
+  },
+  "PROJECT_META": {
+    "projectName": "animal-reserve-janaka",
+    "projectDescription": "Detect and record Safari animals",
+    "projectVersion": "1.0.0",
+    "projectRegion": "us-east-1",
+    "platform": "AWS",
+    "platformRegions": {},
+    "lastSave": 1573109492343
+  },
+  "VCS_STATE": {
+    "provider": "GitHub",
+    "repo": {
+      "name": "animal-reserve-janaka",
+      "url": "https://github.com/janakaud/animal-reserve-janaka"
+    }
+  }
+}
